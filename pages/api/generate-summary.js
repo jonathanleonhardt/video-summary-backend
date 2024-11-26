@@ -5,28 +5,42 @@ import path from 'path';
 import axios from 'axios';
 import FormData from 'form-data';
 
-
-// Inicialize o OpenAI diretamente sem usar `Configuration`
 const openai = new OpenAI({
 	apiKey: process.env.OPENAI_API_KEY,
 });
 
 export default async function handler(req, res) {
-	if (req.method !== 'POST') {
+	res.setHeader('Access-Control-Allow-Origin', '*');
+	res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+	if (req.method !== 'POST' && req.method !== 'OPTIONS') {
 		return res.status(405).json({ error: 'Method not allowed' });
 	}
 
-	const { videoUrl } = req.body;
-	const { userHint } = req.body;
-
 	try {
+		// const { videoUrl } = req.body;
+		// const { userHint } = req.body;
 		// const audioFilePath = await downloadYoutubeAudio(videoUrl);
 		// const transcription = await transcribeAudio(audioFilePath);
-		// console.log(transcription);
-		// const transcription = "Hey, how's it going? You're on camera. What? Smile. What can I do for you? Give it a 12. I don't know. I'm looking for some weed. Alright, but you're not turning off that camera. I'm looking for some beer."
-		const transcription = "Olá a todos! Hoje, quero falar sobre a beleza irresistível dos gatos gordinhos. Esses adoráveis felinos não são apenas fofos, mas também trazem um impacto profundo em nossas vidas. O que os torna tão especiais? Primeiro, a gordura deles é uma forma de amor! Cada pochete é uma prova de que foram bem alimentados e amados. Além disso, seu andar desengonçado e suas carinhas redondas nos fazem sorrir instantaneamente. Estudos mostram que interagir com gatos gordinhos reduz o estresse e a ansiedade, criando um ambiente mais feliz. Então, da próxima vez que você ver um gato gordinho, lembre-se: eles são mais do que fofura; são um lembrete do amor incondicional. Obrigado!";
+		// const summary = await generateSummary(transcription, userHint);
+		// res.status(200).json({ summary });
 
-		const summary = await generateSummary(transcription, userHint);
+		// const fake_ted_talk = 'Olá a todos! Hoje, quero falar sobre a beleza irresistível dos gatos gordinhos. ' +
+						// 'Esses adoráveis felinos não são apenas fofos, mas também trazem um impacto profundo em nossas vidas. ' +
+						// 'O que os torna tão especiais? Primeiro, a gordura deles é uma forma de amor! Cada pochete é uma prova ' +
+						// 'de que foram bem alimentados e amados. Além disso, seu andar desengonçado e suas carinhas redondas ' +
+						// 'nos fazem sorrir instantaneamente. Estudos mostram que interagir com gatos gordinhos reduz o estresse ' +
+						// 'e a ansiedade, criando um ambiente mais feliz. Então, da próxima vez que você ver um gato gordinho, ' +
+						// 'lembre-se: eles são mais do que fofura; são um lembrete do amor incondicional. Obrigado!'
+
+		// const summary = await generateSummary(fake_ted_talk, userHint);
+		const summary = 'Olá a todos!\n\nHoje, quero falar sobre a beleza irresistível dos gatos gordinhos.\n' +
+						'Esses adoráveis felinos não são apenas fofos, mas também trazem um impacto profundo em nossas vidas.\n' +
+						'O que os torna tão especiais? Primeiro, a gordura deles é uma forma de amor! Cada pochete é uma prova ' +
+						'de que foram bem alimentados e amados. Além disso, seu andar desengonçado e suas carinhas redondas ' +
+						'nos fazem sorrir instantaneamente.\nEstudos mostram que interagir com gatos gordinhos reduz o estresse ' +
+						'e a ansiedade, criando um ambiente mais feliz.\nEntão, da próxima vez que você ver um gato gordinho, ' +
+						'lembre-se: eles são mais do que fofura; são um lembrete do amor incondicional.\n\nObrigado!'
 
 		res.status(200).json({ summary });
 	} catch (error) {
@@ -82,10 +96,10 @@ async function transcribeAudio(audioFilePath) {
 }
 
 async function generateSummary(transcription, hint) {
-	const instructionToIA = `Considerando que voce é um professor respondendo para um aluno e que 
-				o texto a seguir é um audio vindo de um video do youtube, explique o que foi apresentado no video
-				${hint ? ` em conjunto com a seguinte descrição enviada pelo aluno sobre o video "${hint}", `: ', '},
-				não se apresente nem se idenfique como professor apenas haja como tal: ${transcription}`;
+	const instructionToIA = 'Considerando que voce é um professor respondendo para um aluno e que ' +
+				'o texto a seguir é um audio vindo de um video do youtube, explique o que foi apresentado no video' +
+				`${hint ? ` em conjunto com a seguinte descrição enviada pelo aluno sobre o video "${hint}", ` : ', '},` +
+				'não se apresente nem se idenfique como professor apenas haja como tal: ${transcription}';
 
 	const response = await openai.completions.create({
 		model: "gpt-3.5-turbo-instruct",
@@ -93,8 +107,6 @@ async function generateSummary(transcription, hint) {
 		temperature: 0.5,
 		max_tokens: 200,
 	});
-
-	console.log(response);
 
 	return response.choices[0].text;
 }
