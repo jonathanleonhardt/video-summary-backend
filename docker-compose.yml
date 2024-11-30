@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo:6.0
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+      MONGO_INITDB_DATABASE: video-summary
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - backend
+
+  mongo-express:
+    image: mongo-express:latest
+    container_name: mongo-express
+    ports:
+      - "8082:8082"
+    environment:
+      PORT: 8082
+      ME_CONFIG_MONGODB_AUTH_USERNAME: root
+      ME_CONFIG_MONGODB_AUTH_PASSWORD: root
+      ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_MONGODB_DATABASE: video-summary
+      # ME_CONFIG_BASICAUTH_ENABLED: true
+      ME_CONFIG_MONGODB_ENABLE_ADMIN: true
+      # ME_CONFIG_MONGODB_AUTH_DATABASE: admin
+    depends_on:
+      - mongo
+    networks:
+      - backend
+
+volumes:
+  mongo-data:
+
+networks:
+  backend:
+    driver: bridge
