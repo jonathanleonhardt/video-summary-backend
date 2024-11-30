@@ -1,7 +1,7 @@
 
-import dbConnect from '../../../lib/mongodb';
-import UserHistory from '@/lib/model/user-history';
-import User from '@/lib/model/user';
+import dbConnect from '../../../lib/db/mongodb';
+import UserHistory from '@/lib/db/model/user-history';
+import User from '@/lib/db/model/user';
 
 export default async function handler(req, res) {
 	if (req.method === 'POST') {

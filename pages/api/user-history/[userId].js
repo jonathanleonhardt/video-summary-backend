@@ -1,5 +1,5 @@
-import dbConnect from '@/lib/mongodb';
-import UserHistory from '@/lib/model/user-history';
+import dbConnect from '@/lib/db/mongodb';
+import UserHistory from '@/lib/db/model/user-history';
 
 export default async function handler(req, res) {
 	res.setHeader('Access-Control-Allow-Origin', '*');
@@ -17,7 +17,7 @@ export default async function handler(req, res) {
 		}
 		const userHistories = await UserHistory.find({ userId });
 
-		if (userHistories.length === 0) {	
+		if (userHistories.length === 0) {
 			return res.status(404).json({ error: 'Historico não encontrado' });
 		}
 

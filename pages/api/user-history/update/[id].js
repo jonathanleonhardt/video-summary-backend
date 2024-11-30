@@ -1,5 +1,5 @@
-import dbConnect from '../../../../lib/mongodb';
-import UserHistory from '@/lib/model/user-history';
+import dbConnect from '../../../../lib/db/mongodb';
+import UserHistory from '@/lib/db/model/user-history';
 
 export default async function handler(req, res) {
 	res.setHeader('Access-Control-Allow-Origin', '*');
