@@ -8,6 +8,11 @@ export default async function handler(req, res) {
 	res.setHeader('Access-Control-Allow-Origin', '*');
 	res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
+	if (req.method === 'OPTIONS') {
+		res.status(204).end();
+		return;
+	}
+
 	if (req.method !== 'POST' && req.method !== 'OPTIONS') {
 		return res.status(405).json({ error: 'Method not allowed' });
 	}
@@ -16,7 +21,7 @@ export default async function handler(req, res) {
 		await dbConnect();
 		const { userId, videoURL, hint, question, aiSummary, feedback, feedbackDescription } = req.body;
 
-		if (!userId || !videoURL || !hint || !question || !aiSummary || feedback === undefined || !feedbackDescription) {
+		if (!userId || !videoURL || !aiSummary) {
 			return res.status(400).json({ error: 'Todos os campos são obrigatórios.' });
 		}
 
